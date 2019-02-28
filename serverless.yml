@@ -1,0 +1,24 @@
+service: thumbnail-generator
+
+custom:
+  bucket: your-bucket-name
+provider:
+  name: aws
+  runtime: nodejs8.10
+  environment:
+    bucket: ${self:custom.bucket}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource: '*'
+
+functions:
+  hello:
+    s3-trigger: handler.s3
+    events:
+      - s3:
+          bucket: ${self:custom.bucket}
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .jpg
